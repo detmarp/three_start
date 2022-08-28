@@ -1,22 +1,22 @@
+[web page](https://detmarp.github.io/three_start)
+&nbsp; | &nbsp;
+[repo](https://github.com/detmarp/three_start)
+&nbsp; | &nbsp;
+[detmarp.github.io](https://detmarp.github.io)
+
 # three_start
-Aug 2022
 
 Let's get started with a few simple web page examples.
 
 [Here's a blog](blog/readme.md) of my notes as I go.
 
-## 00-ice-breaker
+Aug 2022
+
 ![image](./00.png)
+[00-ice-breaker](./00-ice-breaker.html)
 
-[demo]() - [source](./00-ice-breaker.html)
-
-## 01-resizable
-
-[source](./01-resizable.html)
-
-## 02-no-3d
+[01-resizable](./01-resizable.html)
 
 ![image](./02.png)
-
-[source](./02-no-3d.html)
+[02-no-3d](./02-no-3d.html)
 
