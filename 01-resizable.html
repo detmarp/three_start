@@ -1,0 +1,57 @@
+<!--
+  A simple second example that is resizable.  Still just a dumb spinning
+  cube.
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>01 resizable</title>
+    <style>
+      body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import * as three from 'https://unpkg.com/three/build/three.module.js';
+
+      const scene = new three.Scene();
+      const camera = new three.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+      const renderer = new three.WebGLRenderer();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+      document.body.appendChild( renderer.domElement );
+
+      const geometry = new three.BoxGeometry();
+      const material = new three.MeshBasicMaterial( { color: 0xff9900 } );
+      const cube = new three.Mesh( geometry, material );
+      scene.add( cube );
+
+      camera.position.z = 5;
+
+      function resizeCanvasToDisplaySize() {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+      }
+
+      const animate = function() {
+        resizeCanvasToDisplaySize();
+
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+
+        renderer.render(scene, camera);
+
+        requestAnimationFrame(animate);
+      };
+
+      animate();
+    </script>
+  </body>
+</html>

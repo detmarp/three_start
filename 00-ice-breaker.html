@@ -1,7 +1,13 @@
+<!--
+    This simple spinning unlit green cube example exists in lots of places
+    on the internet for a simple starter three.js script.
+
+    Here it is, mostly unchanged
+-->
 <!DOCTYPE html>
 <html>
     <head>
-        <title>My first three.js app</title>
+        <title>00 ice breaker</title>
         <style>
             body { margin: 0; }
         </style>
@@ -11,7 +17,8 @@
             import * as THREE from 'https://unpkg.com/three/build/three.module.js';
 
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth /
+                window.innerHeight, 0.1, 1000 );
 
             const renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
