@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>03 lights</title>
+    <style>
+      body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import * as three from 'https://unpkg.com/three/build/three.module.js';
+
+      var scene, camera, renderer;
+      var g = {};
+
+      function setup() {
+        renderer = new three.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+      }
+
+      function start() {
+        scene = new three.Scene();
+        scene.background = new three.Color(0x220066);
+
+        const ambient = new three.AmbientLight(0x223344);
+        scene.add(ambient);
+
+        const directional = new three.DirectionalLight( 0xffffff, 1 );
+        directional.position.set ( 5, 20, 10);
+        scene.add(directional);
+
+        camera = new three.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        const geometry = new three.BoxGeometry();
+        const material = new three.MeshPhongMaterial({ color: 0xdddddd });
+        g.cube = new three.Mesh(geometry, material);
+        g.cube.position.set(0, -1, 0);
+        scene.add(g.cube);
+        camera.position.z = 3;
+      }
+
+      function resize() {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+      }
+
+      function work() {
+        g.cube.rotation.y += 0.01;
+      }
+
+      function draw() {
+        renderer.render(scene, camera);
+      }
+
+      function update() {
+        resize();
+        work();
+        draw();
+        requestAnimationFrame(update);
+      }
+
+      setup();
+      start();
+      update();
+
+    </script>
+  </body>
+</html>

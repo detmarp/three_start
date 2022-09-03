@@ -24,14 +24,15 @@ If you're viewing this as a web page, then the demo links below should run the d
 
 To view the demo sources, [re-open this page as repo source](https://github.com/detmarp/three_start), and then follow the demo links.
 
-![image](./00.png)
+[![image](./00.png)](./00-ice-breaker.html)
 [00-ice-breaker](./00-ice-breaker.html)
 
 [01-resizable](./01-resizable.html)
 
-![image](./02.png)
+[![image](./02.png)](./02-no-3d.html)
 [02-no-3d](./02-no-3d.html)
 
+[03-lights](./03-lights.html)
 
 ## Blog
 
