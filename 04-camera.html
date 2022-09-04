@@ -37,18 +37,18 @@
         g.controls = new OrbitControls( camera, renderer.domElement );
 
         g.o = [];
-        addGeo(new three.BoxGeometry(), 0x2299ee);
-        addGeo(new three.ConeGeometry(0.5, 1), 0xee2222);
-        addGeo(new three.CylinderGeometry(0.5, 0.5, 1), 0x22dd33);
-        addGeo(new three.DodecahedronGeometry(0.5), 0xff9911);
-        addGeo(new three.IcosahedronGeometry(0.5), 0x7733ff);
-        addGeo(new three.OctahedronGeometry(0.5), 0xeeff22);
-        addGeo(new three.SphereGeometry(0.5), 0x4444ff);
-        addGeo(new three.TetrahedronGeometry(0.5), 0xffddcc);
-        addGeo(new three.TorusGeometry(0.5, 0.15), 0xaa8822);
+        addGeo(new three.BoxGeometry(), 0xff0000);
+        addGeo(new three.ConeGeometry(0.5, 1), 0xffff00);
+        addGeo(new three.CylinderGeometry(0.5, 0.5, 1), 0x0088ff);
+        addGeo(new three.DodecahedronGeometry(0.5), 0x8800ff);
+        addGeo(new three.IcosahedronGeometry(0.5), 0xff8800);
+        addGeo(new three.OctahedronGeometry(0.5), 0x88ff00);
+        addGeo(new three.SphereGeometry(0.5), 0x0000ff);
+        addGeo(new three.TetrahedronGeometry(0.5), 0xff0088);
+        addGeo(new three.TorusGeometry(0.5, 0.15), 0xcc88ff);
 
         var floor = new three.Mesh(
-          new three.PlaneGeometry(10, 10),
+          new three.PlaneGeometry(6, 6),
           new three.MeshPhongMaterial({ color: 0xdddddd }));
         floor.position.set(0, -0.5, 0);
         floor.rotation.x = Math.PI * -0.5;
@@ -60,7 +60,7 @@
           new three.MeshPhongMaterial({ color: color }));
         var i = g.o.length;
         var x = (i % 3 - 1) * 2 ;
-        var z = Math.floor(i / 3) * -2;
+        var z = (Math.floor(i / 3) -1) * -2;
         mesh.position.set(x, 0, z);
         g.o.push(mesh);
         scene.add(mesh);
