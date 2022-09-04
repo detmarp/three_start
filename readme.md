@@ -27,15 +27,19 @@ To view the demo sources, [re-open this page as repo source](https://github.com/
 [![image](./00.png)](./00-ice-breaker.html)
 [00-ice-breaker](./00-ice-breaker.html)
 
+[![image](./01.png)](./01-resizable.html)
 [01-resizable](./01-resizable.html)
 
 [![image](./02.png)](./02-no-3d.html)
 [02-no-3d](./02-no-3d.html)
 
+[![image](./03.png)](./03-lights.html)
 [03-lights](./03-lights.html)
 
+[![image](./04.png)](./04-camera.html)
 [04-camera](./04-camera.html)
 
+[![image](./05.png)](./05-buttons.html)
 [05-buttons](./05-buttons.html)
 
 ## Blog
