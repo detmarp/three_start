@@ -36,6 +36,8 @@ To view the demo sources, [re-open this page as repo source](https://github.com/
 
 [04-camera](./04-camera.html)
 
+[05-buttons](./05-buttons.html)
+
 ## Blog
 
 [Here's a blog](blog/readme.md) of my notes as I go.  There's not really anything there yet.
