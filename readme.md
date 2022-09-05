@@ -42,6 +42,8 @@ To view the demo sources, [re-open this page as repo source](https://github.com/
 [![image](./05.png)](./05-buttons.html)
 [05-buttons](./05-buttons.html)
 
+[06-planets](./06-planets.html)
+
 ## Blog
 
 [Here's a blog](blog/readme.md) of my notes as I go.  There's not really anything there yet.
