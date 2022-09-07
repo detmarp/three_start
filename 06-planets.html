@@ -3,7 +3,7 @@
   <head>
     <title>06 planets</title>
     <style>
-      body { overflow: hidden; margin: 0; }
+      body { overflow: hidden; margin: 0; background-color: #222222;}
       .ui { position: absolute; margin: 1rem;}
       button { margin: 0.5rem; padding: 0.5rem;}
     </style>
@@ -17,13 +17,12 @@
       import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js';
 
       var g = {}; // For globals
-      var scene, camera;
 
       function setup() {
         g.renderer = new three.WebGLRenderer();
         g.renderer.setSize( window.innerWidth, window.innerHeight );
-        g.renderer.shadowMap.enabled = true;
-        g.renderer.shadowMap.type = three.PCFSoftShadowMap;
+        //g.renderer.shadowMap.enabled = true;
+        //g.renderer.shadowMap.type = three.PCFSoftShadowMap;
 
         document.body.appendChild(g.renderer.domElement);
 
@@ -41,37 +40,32 @@
 
       function onResetCamera() {
         g.controls.reset();
-        camera.position.set(0.25, 2, 2);
-        camera.up.set(0, 1, 0);
-        camera.lookAt(0, 0.5, 0);
+        g.camera.position.set(0, 5, 10);
+        g.camera.up.set(0, 1, 0);
+        g.camera.lookAt(0, 0, 0);
         g.controls.update();
       }
 
       function onLightingA() {
         removeLights();
 
-        const ambient = new three.AmbientLight(0x112266);
+        const ambient = new three.AmbientLight(0x440066, 0.2);
         addLight(ambient);
 
-        const directional = new three.DirectionalLight(0xff00ff, 0.8);
-        directional.position.set ( 5, 20, 10);
-        directional.castShadow = true;
-        addLight(directional);
+        const point = new three.PointLight(0xffffff, 1.0);
+        point.position.set(-10, 0, 0);
 
-        const directional2 = new three.DirectionalLight(0xffff00, 0.8);
-        directional2.position.set ( -5, 5, 2);
-        directional2.castShadow = true;
-        addLight(directional2);
+        addLight(point);
       }
 
       function addLight(light) {
         g.lights.push(light);
-        scene.add(light);
+        g.scene.add(light);
       }
 
       function removeLights() {
         g.lights.forEach(light => {
-          scene.remove(light);
+          g.scene.remove(light);
           light.dispose();
         });
         g.lights = [];
@@ -84,59 +78,44 @@
         g.o = [];
         g.lights = [];
 
-        scene = new three.Scene();
+        g.scene = new three.Scene();
 
-        onLightingA();
+        g.camera = new three.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        g.camera.position.set(0, 2, 4);
 
-        camera = new three.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
-        camera.position.set(0, 2, 4);
-
-        g.controls = new OrbitControls(camera, g.renderer.domElement);
+        g.controls = new OrbitControls(g.camera, g.renderer.domElement);
 
         const loader = new three.CubeTextureLoader();
         three.ImageUtils.crossOrigin = '';
-  const texture = loader.load([
-  'https://i.imgur.com/N64V66i.png', // south / front
-  'https://i.imgur.com/MmH8v6V.png', // north / back
-  'https://i.imgur.com/O296mV6.png', // up (connects to west/left)
-  'https://i.imgur.com/oFy1dx6.png', // down
-  'https://i.imgur.com/1N2fcU1.png', // east / right
-  'https://i.imgur.com/hW3M2Cs.png', // west / left
-  ]);
-  scene.background = texture;
+        const texture = loader.load([
+          'https://i.imgur.com/N64V66i.png', // south / front
+          'https://i.imgur.com/MmH8v6V.png', // north / back
+          'https://i.imgur.com/O296mV6.png', // up (connects to west/left)
+          'https://i.imgur.com/oFy1dx6.png', // down
+          'https://i.imgur.com/1N2fcU1.png', // east / right
+          'https://i.imgur.com/hW3M2Cs.png', // west / left
+        ]);
+        g.scene.background = texture;
 
-        var mesh = new three.Mesh(
-          new three.DodecahedronGeometry(0.5),
-          new three.MeshPhongMaterial({ color: 0xeeddcc })
-        );
-        mesh.castShadow = true;
-        mesh.position.set(0, 0.75, 0);
-        g.o.push(mesh);
-        scene.add(mesh)
+        g.earth = addGeo(new three.SphereGeometry(0.5, 20, 20), 0xddeeff);
+        g.earth.position.set(0, 0, 0);
 
-        var floor = new three.Mesh(
-          new three.PlaneGeometry(2, 2),
-          new three.MeshPhongMaterial({ color: 0xeeeeee }));
-        floor.receiveShadow = true;
-        floor.position.set(0, 0, 0);
-        floor.rotation.x = Math.PI * -0.5;
-        scene.add(floor);
+        g.sun = addGeo(new three.DodecahedronGeometry(2), 0xffffdd);
+        g.sun.position.set(-10, 0, 0);
 
-        var floorBottom = new three.Mesh(
-          new three.PlaneGeometry(2, 2),
-          new three.MeshPhongMaterial({ color: 0x888888 }));
-        floorBottom.position.set(0, 0, 0);
-        floorBottom.rotation.x = Math.PI * 0.5;
-        scene.add(floorBottom);
+        g.moon = addGeo(new three.DodecahedronGeometry(0.2), 0x999999);
+        g.moon.position.set(4, 0, 0);
+
+        onLightingA();
+        onResetCamera();
       }
 
       function addGeo(geometry, color) {
         var mesh = new three.Mesh(geometry,
           new three.MeshPhongMaterial({ color: color }));
-        mesh.castShadow = true;
-        mesh.position.set(0, 0.75, 0);
         g.o.push(mesh);
-        scene.add(mesh);
+        g.scene.add(mesh);
+        return mesh;
       }
 
       function resize() {
@@ -145,8 +124,8 @@
         const height = canvas.clientHeight;
 
         g.renderer.setSize(width, height, false);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
+        g.camera.aspect = width / height;
+        g.camera.updateProjectionMatrix();
 
         g.renderer.setSize( window.innerWidth, window.innerHeight );
 
@@ -160,7 +139,7 @@
       }
 
       function draw() {
-        g.renderer.render(scene, camera);
+        g.renderer.render(g.scene, g.camera);
       }
 
       function update() {
