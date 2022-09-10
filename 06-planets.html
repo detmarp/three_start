@@ -40,7 +40,7 @@
 
       function onResetCamera() {
         g.controls.reset();
-        g.camera.position.set(0, 5, 10);
+        g.camera.position.set(0, 5, 20);
         g.camera.up.set(0, 1, 0);
         g.camera.lookAt(0, 0, 0);
         g.controls.update();
@@ -97,13 +97,34 @@
         ]);
         g.scene.background = texture;
 
-        g.earth = addGeo(new three.SphereGeometry(0.5, 20, 20), 0xddeeff);
+        var geo = new three.SphereGeometry(0.5, 20, 20);
+        geo.faces.forEach(f => {
+            for (var i = 0; i < 3; i++) {
+              f.vertexColors[i] = new three.Color(three.MathUtils.randInt(0, 0xffffff));
+            }
+          }
+        );
+        g.earth = new three.Mesh(
+          geo,
+          new three.MeshPhongMaterial({ color: 0xddeeff,vertexColors: true}));
+        g.o.push(g.earth);
+        g.scene.add(g.earth);
         g.earth.position.set(0, 0, 0);
 
-        g.sun = addGeo(new three.DodecahedronGeometry(2), 0xffffdd);
-        g.sun.position.set(-10, 0, 0);
+        g.sun = new three.Mesh(
+          new three.SphereGeometry(5, 20, 20),
+          new three.MeshBasicMaterial({ color: 0xffffcc}));
+        g.o.push(g.sun);
+        g.scene.add(g.sun);
+        g.sun.position.set(-400, 0, 0);
 
-        g.moon = addGeo(new three.DodecahedronGeometry(0.2), 0x999999);
+
+        g.moon = new three.Mesh(
+          new three.SphereGeometry(0.2, 20, 20),
+          new three.MeshPhongMaterial({ color: 0x999999}));
+        g.o.push(g.moon);
+        g.scene.add(g.moon);
+        g.moon.position.set(0, 0, 0);
         g.moon.position.set(4, 0, 0);
 
         onLightingA();
