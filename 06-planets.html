@@ -6,11 +6,13 @@
       body { overflow: hidden; margin: 0; background-color: #222222;}
       .ui { position: absolute; margin: 1rem;}
       button { margin: 0.5rem; padding: 0.5rem;}
+      .green { color:lime; white-space: pre; }
     </style>
   </head>
   <body>
     <div id="content" class='ui'>
       <button id='reset_camera'>Reset camera</button><br>
+      <div id='info' class='green'></div>
     </div>
     <script type="module">
       import * as three from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
@@ -84,6 +86,9 @@
         g.camera.position.set(0, 2, 4);
 
         g.controls = new OrbitControls(g.camera, g.renderer.domElement);
+        g.controls.addEventListener('start', onTouchStart);
+        g.controls.addEventListener('change', () => {printInfo('asdf');});
+        g.controls.addEventListener('end', onTouchEnd);
 
         const loader = new three.CubeTextureLoader();
         three.ImageUtils.crossOrigin = '';
@@ -161,6 +166,19 @@
 
       function draw() {
         g.renderer.render(g.scene, g.camera);
+      }
+
+      function printInfo(text) {
+        document.getElementById('info').textContent = text;
+
+      }
+
+      function onTouchStart() {
+        printInfo('start');
+      }
+
+      function onTouchEnd() {
+        printInfo('end');
       }
 
       function update() {
