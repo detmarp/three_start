@@ -238,6 +238,9 @@
       }
 
       function OnTouch(event) {
+        if (event == 0) {
+          return; // let's not auto-set?
+        }
         if (event == 1) {
           g.cameraState.grab = true;
         }
@@ -279,6 +282,23 @@
         if (!g.cameraState.auto && g.cameraState.age > 1000) {
           g.cameraState.auto = true;
           changed = true;
+        }
+
+        if (g.cameraState.auto) {
+          // position the camera
+          var position = new three.Vector3();
+          var target = new three.Vector3();
+
+          g.moon.getWorldPosition(position);
+          g.earth.getWorldPosition(target);
+          position.set(20, 30, 10);
+
+          g.camera.position.copy(position);
+          g.camera.up.set(0, 1, 0);
+          g.camera.lookAt(target);
+          g.controls.target.copy(target);
+
+          g.controls.update();
         }
 
         printInfo(
