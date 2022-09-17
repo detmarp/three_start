@@ -137,7 +137,7 @@
         g.tree = [];
         {
           // Set up the whole solar system
-          var day = 0.1;
+          var day = 0.02;
           var root = addToTree();
 
           var sunA = addToTree(root);
@@ -169,6 +169,21 @@
           sunB.add(g.sun);
           earthC.add(g.earth);
           moon.add(g.moon);
+
+          // camera nodes
+          var camRate = 0.001;
+          var camA = addToTree(earthA);
+          camA.rate = camRate;
+
+          var camB = addToTree(camA);
+          camB.position.set(12, 4, 0);
+          camB.rotation.z = -1.0;
+          camB.rate = camRate * 0.3;
+
+          var camC = addToTree(camB);
+          camC.position.set(10, 1, 1);
+
+          g.xxx = camC;
         }
 
         onLightingA();
@@ -182,7 +197,7 @@
         if (parent) {
           parent.add(node);
         }
-        if (false) {
+        if (true) {
           // add a debug axis
           var a = new three.AxesHelper(2);
           node.add(a);
@@ -289,9 +304,8 @@
           var position = new three.Vector3();
           var target = new three.Vector3();
 
-          g.moon.getWorldPosition(position);
+          g.xxx.getWorldPosition(position);
           g.earth.getWorldPosition(target);
-          position.set(20, 30, 10);
 
           g.camera.position.copy(position);
           g.camera.up.set(0, 1, 0);
