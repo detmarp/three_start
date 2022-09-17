@@ -55,7 +55,7 @@
         addLight(ambient);
 
         const point = new three.PointLight(0xffffff, 1.0);
-        point.position.set(-10, 0, 0);
+        point.position.set(0, 0, 0);
 
         addLight(point);
       }
@@ -77,6 +77,15 @@
       }
 
       function start() {
+        g.now = Date.now();
+        g.cameraState ??= {
+          age: 0,
+          count: 0,
+          touch: true,
+          grab: false,
+          auto: false,
+        };
+
         g.o = [];
         g.lights = [];
 
@@ -86,9 +95,9 @@
         g.camera.position.set(0, 2, 4);
 
         g.controls = new OrbitControls(g.camera, g.renderer.domElement);
-        g.controls.addEventListener('start', onTouchStart);
-        g.controls.addEventListener('change', () => {printInfo('asdf');});
-        g.controls.addEventListener('end', onTouchEnd);
+        g.controls.addEventListener('change', () => { OnTouch(0); });
+        g.controls.addEventListener('start', () => { OnTouch(1); });
+        g.controls.addEventListener('end', () => { OnTouch(2); });
 
         const loader = new three.CubeTextureLoader();
         three.ImageUtils.crossOrigin = '';
@@ -109,28 +118,76 @@
           new three.MeshPhongMaterial({ color: 0xddeeff, vertexColors: true}));
         g.o.push(g.earth);
         g.scene.add(g.earth);
-        g.earth.position.set(0, 0, 0);
 
         g.sun = new three.Mesh(
-          new three.SphereGeometry(5, 20, 20),
-          new three.MeshBasicMaterial({ color: 0xffffcc}));
+          new three.SphereGeometry(1.5, 20, 20),
+          new three.MeshBasicMaterial({ color: 0xffffee}));
         g.o.push(g.sun);
         g.scene.add(g.sun);
-        g.sun.position.set(-400, 0, 0);
-
 
         g.moon = new three.Mesh(
           colorizeGeo(new three.SphereGeometry(0.2, 20, 20), moonMap,
             [0x222222, 0x666666, 0x999999, 0xffffff]
           ),
-          new three.MeshPhongMaterial({ color: 0x999999, vertexColors: true}));
+          new three.MeshPhongMaterial({ color: 0xffffdd, vertexColors: true}));
         g.o.push(g.moon);
         g.scene.add(g.moon);
-        g.moon.position.set(0, 0, 0);
-        g.moon.position.set(4, 0, 0);
+
+        var ob;
+        g.tree = [];
+        {
+          // Set up the whole solar system
+          var day = 0.1;
+          var root = addToTree();
+
+          var sunA = addToTree(root);
+
+          var sunB = addToTree(sunA);
+          sunB.rate = day / 30;
+
+          var toEarth = addToTree(sunA);
+          toEarth.rate = day / 365;
+
+          var earthA = addToTree(toEarth);
+          earthA.position.set(10, 0, 0);
+          earthA.rate = -toEarth.rate;
+
+          var earthB = addToTree(earthA);
+          earthB.rotation.z = 0.4;
+
+          var earthC = addToTree(earthB);
+          earthC.rate = day;
+
+          var toMoon = addToTree(earthB);
+          toMoon.rate = day / 28;
+
+          var moonRoot = addToTree(toMoon);
+          moonRoot.position.set(4, 0, 0);
+
+          var moon = addToTree(moonRoot);
+
+          sunB.add(g.sun);
+          earthC.add(g.earth);
+          moon.add(g.moon);
+        }
 
         onLightingA();
         onResetCamera();
+      }
+
+      function addToTree(parent) {
+        var node = new three.Object3D();
+        g.scene.add(node);
+        g.tree.push(node);
+        if (parent) {
+          parent.add(node);
+        }
+        if (false) {
+          // add a debug axis
+          var a = new three.AxesHelper(2);
+          node.add(a);
+        }
+        return node;
       }
 
       function colorizeGeo(geo, map, clut) {
@@ -180,10 +237,58 @@
         g.controls.update();
       }
 
+      function OnTouch(event) {
+        if (event == 1) {
+          g.cameraState.grab = true;
+        }
+        if (event == 2) {
+          g.cameraState.grab = false;
+        }
+        g.cameraState.touch = true;
+      }
+
       function work() {
-        g.o.forEach(obj => {
-          obj.rotation.y += 0.01;
+        var now = Date.now();
+        var dt = now - g.now;
+
+        // update world
+        g.tree.forEach(ob => {
+          if (ob.rate) {
+            ob.rotation.y += ob.rate;
+          }
         });
+
+        // update camera
+        var changed = false;
+        if (!g.cameraState.grab) {
+          g.cameraState.age += dt;
+        }
+        if (g.cameraState.auto && g.cameraState.touch) {
+          g.cameraState.auto = false;
+          changed = true;
+        }
+        if (g.cameraState.touch) {
+          changed = true;
+          g.cameraState.touch = false;
+        }
+        if (changed) {
+          g.cameraState.count ++;
+          g.cameraState.age = 0;
+          g.cameraState.touch = false;
+        }
+        if (!g.cameraState.auto && g.cameraState.age > 1000) {
+          g.cameraState.auto = true;
+          changed = true;
+        }
+
+        printInfo(
+          `age ${g.cameraState.age}\n` +
+          `count ${g.cameraState.count}\n` +
+          `auto ${g.cameraState.auto}\n` +
+          ``
+          );
+
+        g.now = now;
       }
 
       function draw() {
@@ -193,14 +298,6 @@
       function printInfo(text) {
         document.getElementById('info').textContent = text;
 
-      }
-
-      function onTouchStart() {
-        printInfo('start');
-      }
-
-      function onTouchEnd() {
-        printInfo('end');
       }
 
       function update() {
