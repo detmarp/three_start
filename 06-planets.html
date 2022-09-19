@@ -11,7 +11,6 @@
   </head>
   <body>
     <div id="content" class='ui'>
-      <button id='reset_camera'>Reset camera</button><br>
       <div id='info' class='green'></div>
     </div>
     <script type="module">
@@ -36,15 +35,24 @@
       }
 
       function onWindowLoad() {
-        assignButton('reset_camera', onResetCamera);
+        //assignButton('reset_camera', onResetCamera);
         onResetCamera();
       }
 
       function onResetCamera() {
         g.controls.reset();
-        g.camera.position.set(0, 5, 20);
+
+        var a = new three.Vector3();
+        var b = new three.Vector3();
+
+        g.earth.getWorldPosition(a);
+        b.copy(a);
+        a.add(new three.Vector3(20, 0, 0));
+
+        g.camera.position.copy(a);
         g.camera.up.set(0, 1, 0);
-        g.camera.lookAt(0, 0, 0);
+        g.cameraState.lookat.copy(b);
+        g.camera.lookAt(b);
         g.controls.update();
       }
 
@@ -84,6 +92,7 @@
           touch: true,
           grab: false,
           auto: false,
+          lookat: new three.Vector3(),
         };
 
         g.o = [];
@@ -111,7 +120,8 @@
         ]);
         g.scene.background = texture;
 
-        var geo = new three.SphereGeometry(0.5, 20, 20);
+        var radiusE = 0.5;
+        var geo = new three.SphereGeometry(radiusE, 20, 20);
         colorizeGeo(geo, earthMap, [0xffffff, 0x0044bb, 0x009900, 0xbb6600]);
         g.earth = new three.Mesh(
           geo,
@@ -120,13 +130,13 @@
         g.scene.add(g.earth);
 
         g.sun = new three.Mesh(
-          new three.SphereGeometry(1.5, 20, 20),
+          new three.SphereGeometry(radiusE * 4, 20, 20),
           new three.MeshBasicMaterial({ color: 0xffffee}));
         g.o.push(g.sun);
         g.scene.add(g.sun);
 
         g.moon = new three.Mesh(
-          colorizeGeo(new three.SphereGeometry(0.2, 20, 20), moonMap,
+          colorizeGeo(new three.SphereGeometry(radiusE * 0.25, 20, 20), moonMap,
             [0x222222, 0x666666, 0x999999, 0xffffff]
           ),
           new three.MeshPhongMaterial({ color: 0xffffdd, vertexColors: true}));
@@ -138,6 +148,9 @@
         {
           // Set up the whole solar system
           var day = 0.02;
+          var distanceM = 4;
+          var distanceE = 200;
+
           var root = addToTree();
 
           var sunA = addToTree(root);
@@ -149,7 +162,7 @@
           toEarth.rate = day / 365;
 
           var earthA = addToTree(toEarth);
-          earthA.position.set(10, 0, 0);
+          earthA.position.set(distanceE, 0, 0);
           earthA.rate = -toEarth.rate;
 
           var earthB = addToTree(earthA);
@@ -162,7 +175,7 @@
           toMoon.rate = day / 28;
 
           var moonRoot = addToTree(toMoon);
-          moonRoot.position.set(4, 0, 0);
+          moonRoot.position.set(distanceM, 0, 0);
 
           var moon = addToTree(moonRoot);
 
@@ -173,17 +186,30 @@
           // camera nodes
           var camRate = 0.001;
           var camA = addToTree(earthA);
-          camA.rate = camRate;
+          camA.rotation.x = 1;
+          camA.rotation.y = 3;
+          camA.rate = -camRate;
 
           var camB = addToTree(camA);
-          camB.position.set(12, 4, 0);
-          camB.rotation.z = -1.0;
-          camB.rate = camRate * 0.3;
+          camB.position.set(15, 0, 0);
+          camB.rotation.x = 1;
+          camB.rotation.y = 3;
+          camB.rate = camRate * 0.5;
 
           var camC = addToTree(camB);
-          camC.position.set(10, 1, 1);
+          camC.position.set(11, 0, 0);
 
           g.xxx = camC;
+
+          var camD = addToTree(earthA);
+          camD.rotation.x = 0;
+          camD.rotation.y = 1;
+          camD.rate = camRate * -1.1;
+
+          var camE = addToTree(camD);
+          camE.position.set(2, 0, 0);
+
+          g.yyy = camE;
         }
 
         onLightingA();
@@ -197,7 +223,7 @@
         if (parent) {
           parent.add(node);
         }
-        if (true) {
+        if (false) {
           // add a debug axis
           var a = new three.AxesHelper(2);
           node.add(a);
@@ -300,25 +326,40 @@
         }
 
         if (g.cameraState.auto) {
-          // position the camera
+          // find the goal camera position, and lerp toward it.
           var position = new three.Vector3();
           var target = new three.Vector3();
 
           g.xxx.getWorldPosition(position);
-          g.earth.getWorldPosition(target);
+          g.yyy.getWorldPosition(target);
 
-          g.camera.position.copy(position);
+          var n = 5000;
+          var x = three.MathUtils.clamp((g.cameraState.age - 1000) / n, 0, 1);
+          var ease = Math.pow(2, 10 * x - 10);
+
+          g.camera.position.lerp(position, ease);
           g.camera.up.set(0, 1, 0);
-          g.camera.lookAt(target);
+
+          g.cameraState.lookat.copy(g.controls.target);
+          g.cameraState.lookat.lerp(target, ease);
+
+          g.camera.lookAt(g.cameraState.lookat);
           g.controls.target.copy(target);
 
           g.controls.update();
         }
 
+        var ease = 0;
+        var x = 0;
+        if (g.cameraState.auto) {
+          var n = 5000;
+          x = three.MathUtils.clamp((g.cameraState.age - 1000) / n, 0, 1);
+          ease = Math.pow(2, 10 * x - 10);
+        }
         printInfo(
           `age ${g.cameraState.age}\n` +
           `count ${g.cameraState.count}\n` +
-          `auto ${g.cameraState.auto}\n` +
+          `auto ${g.cameraState.auto} ${x} ${ease}\n` +
           ``
           );
 
@@ -330,8 +371,7 @@
       }
 
       function printInfo(text) {
-        document.getElementById('info').textContent = text;
-
+        //document.getElementById('info').textContent = text;
       }
 
       function update() {
