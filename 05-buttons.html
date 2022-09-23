@@ -95,7 +95,6 @@
       function removeLights() {
         g.lights.forEach(light => {
           scene.remove(light);
-          light.dispose();
         });
         g.lights = [];
         g.o.forEach(obj => {
