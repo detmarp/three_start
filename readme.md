@@ -28,7 +28,7 @@ If you're viewing this as a web page, then the demo links below should run the d
 [05-buttons](./05-buttons.html)
 
 [![image](./06.png)](./06-planets.html)
-[06-buttons](./06-planets.html)
+[06-planets](./06-planets.html)
 
 To view the demo sources, [re-open this page as repo source](https://github.com/detmarp/three_start), and then follow the demo links.
 
