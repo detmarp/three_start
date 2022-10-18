@@ -1,0 +1,29 @@
+body {
+  font-family: sans-serif;
+  font-size: 4vmin;
+  overflow: hidden;
+  position: absolute;
+  margin: 1rem;
+}
+button {
+  margin: 0.5rem;
+  padding: 0.3rem;
+  font-family: sans-serif;
+  font-size: 4vmin;
+}
+body {
+          background-color: yellow;
+      }
+@media (max-width: 480px) {
+      body {
+          background-color: red;
+      }
+  }
+
+  /* Media Query for Large screens */
+  @media (min-device-width: 1281px)
+{
+      body {
+          background-color: orange;
+      }
+  }
