@@ -1,3 +1,4 @@
+/* format for phones */
 body {
   font-family: sans-serif;
   font-size: 4vmin;
@@ -12,38 +13,25 @@ button {
   font-family: sans-serif;
   font-size: 4vmin;
 }
-/*
-  * android tall is red;
-  * but android wide is still yellow.
-  * [ ] ipad is yellow and way too big font
-  * both phonbe look decent
-  * [ ] desktop font is way too big
-tablet
-*/
-body {
-          background-color: yellow;
-      }
-@media (max-width: 480px) {
-      body {
-          background-color: red;
-      }
-  }
 
-  /* Media Query for Large screens */
-  @media (min-device-width: 1281px)
-{
-      body {
-          font-size: 1.2rem;
-          background-color: orange;
-        }
-        button {
-          font-size: 1.0rem;
-        }
-  }
-
+/* detect ipad */
 @media (min-device-width:768px) {
   body {
+    font-size: 1.2rem;
     background-color: skyblue;
   }
+  button {
+    font-size: 1.0rem;
+  }
+}
 
+/* detect desktop */
+@media (min-device-width: 1200px) {
+  body {
+    font-size: 1.0rem;
+    background-color: orange;
+  }
+  button {
+    font-size: 1.0rem;
+  }
 }
